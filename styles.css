@@ -1,0 +1,94 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+#map {
+    height: 100vh;
+    width: 100%;
+}
+.info-panel {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1000;
+    max-width: 250px;
+}
+.info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #333;
+}
+.legend-item {
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    font-size: small;
+}
+.legend-color {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    border: 1px solid #000;
+}
+.coordinates {
+    font-size: 11px;
+    color: #666;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+.leaflet-tooltip {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #333;
+    border-radius: 3px;
+    padding: 3px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+.coordinate-marker {
+    cursor: pointer;
+}
+/* DEBUG: Navigation positioning - moved from top-left to avoid zoom control conflict */
+nav {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    right: auto;
+    width: auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    z-index: 1002; /* DEBUG: Higher than legend panel (1000) */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border-radius: 4px;
+}
+nav a {
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: inline-block;
+}
+nav a:hover {
+    background: #0056b3;
+}
+nav button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 10px;
+}
+nav button:hover {
+    background: #0056b3;
+}
