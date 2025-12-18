@@ -571,10 +571,7 @@ function updateLayerVisibility() {
 }
 
 // Add zoom event listener
-map.on('zoomend', updateLaydownVisibility);
-
-// Set initial visibility
-updateLayerVisibility();
+map.on('zoomend', updateLayerVisibility);
 
 // ============= AREA LABELS (Always Visible) =============
 
@@ -685,3 +682,9 @@ const allCoords = [
 
 const bounds = L.latLngBounds(allCoords);
 map.fitBounds(bounds, { padding: [50, 50] });
+
+// Set initial layer visibility after fitBounds completes
+// Use setTimeout to ensure fitBounds animation completes first
+setTimeout(() => {
+    updateLayerVisibility();
+}, 100);
