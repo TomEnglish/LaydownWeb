@@ -338,34 +338,58 @@ zoomedOutLaydownGroup.addLayer(simpleLaydownLabel);
 
 // ZOOMED IN: Detailed bin grid (visible when zoom >= 17)
 function createDetailedLaydownBins() {
-    // Define colors for each row
-    const rowColors = {
-        'A': { color: '#FF6B6B', fillColor: '#FF6B6B' },
-        'B': { color: '#4ECDC4', fillColor: '#4ECDC4' },
-        'C': { color: '#45B7D1', fillColor: '#45B7D1' },
-        'D': { color: '#96CEB4', fillColor: '#96CEB4' },
-        'E': { color: '#FFEAA7', fillColor: '#FFEAA7' }
-    };
-
-    // Define special bin configurations
+    // Define special bin configurations with BOLD styling
     const specialBins = {
-        'A1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
-        'A2': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
-        'A3': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.4 },
-        'A4': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.4 },
-        'A6': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.4 },
-        'A7': { label: 'A7', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.6 },
-        'B3': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
-        'B4': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
-        'B7': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.4 },
-        'D7': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.4 },
-        'E7': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.4 }
+        'A1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
+        'A2': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
+        'A3': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.6 },
+        'A4': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.6 },
+        'A6': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.6 },
+        'A7': { label: 'A7', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.65 },
+        'B3': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
+        'B4': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
+        'B7': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.6 },
+        'D7': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.6 },
+        'E7': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.6 }
     };
 
     // Bins that are part of Bayonne Laydown
     const bayonneBins = ['D1', 'D2', 'D3', 'E2', 'E3', 'E4'];
 
     const rowLabels = ['A', 'B', 'C', 'D', 'E'];
+
+    // Add row headers on the left side
+    for (let row = 0; row < 5; row++) {
+        const rowLabel = rowLabels[row];
+        const headerLat = topLat - (row * binHeight) - (binHeight / 2);
+        const headerLon = leftLon - 0.00015;
+
+        const rowHeader = L.marker([headerLat, headerLon], {
+            icon: L.divIcon({
+                className: 'row-header',
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 7px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${rowLabel}</div>`,
+                iconSize: null,
+                iconAnchor: [0, 8]
+            })
+        });
+        zoomedInLaydownGroup.addLayer(rowHeader);
+    }
+
+    // Add column headers at the top
+    for (let col = 0; col < 7; col++) {
+        const headerLat = topLat + 0.00008;
+        const headerLon = leftLon + (col * binWidth) + (binWidth / 2);
+
+        const colHeader = L.marker([headerLat, headerLon], {
+            icon: L.divIcon({
+                className: 'col-header',
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 6px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${col + 1}</div>`,
+                iconSize: null,
+                iconAnchor: [8, 0]
+            })
+        });
+        zoomedInLaydownGroup.addLayer(colHeader);
+    }
 
     for (let row = 0; row < 5; row++) {
         for (let col = 0; col < 7; col++) {
@@ -383,23 +407,27 @@ function createDetailedLaydownBins() {
             const westLon = leftLon + (col * binWidth);
             const eastLon = westLon + binWidth;
 
-            // Determine bin styling
-            let binStyle = {
-                color: rowColors[rowLabel].color,
-                weight: 1,
-                opacity: 0.8,
-                fillColor: rowColors[rowLabel].fillColor,
-                fillOpacity: 0.2
-            };
+            // Determine bin styling - SUBTLE for regular bins, BOLD for special bins
+            let binStyle;
+            const isSpecial = specialBins[binLabel];
 
-            // Override with special bin styling if applicable
-            if (specialBins[binLabel]) {
+            if (isSpecial) {
+                // Special bins: BOLD and visible
                 binStyle = {
                     color: specialBins[binLabel].color,
-                    weight: 2,
-                    opacity: 0.9,
+                    weight: 2.5,
+                    opacity: 0.95,
                     fillColor: specialBins[binLabel].fillColor,
                     fillOpacity: specialBins[binLabel].fillOpacity
+                };
+            } else {
+                // Regular bins: VERY subtle
+                binStyle = {
+                    color: '#CCCCCC',        // Light gray
+                    weight: 0.5,             // Thin border
+                    opacity: 0.3,            // Semi-transparent border
+                    fillColor: '#FFFFFF',    // White fill
+                    fillOpacity: 0.05        // Almost transparent
                 };
             }
 
@@ -412,33 +440,53 @@ function createDetailedLaydownBins() {
             ], binStyle);
 
             // Determine label text
-            const labelText = specialBins[binLabel] ? specialBins[binLabel].label : binLabel;
+            const labelText = isSpecial ? specialBins[binLabel].label : binLabel;
+
+            // Add hover tooltip for ALL bins
+            binPolygon.bindTooltip(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Row: ${rowLabel} | Column: ${col + 1}`, {
+                sticky: true,
+                direction: 'top'
+            });
 
             // Add popup with bin information
             binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Row: ${rowLabel} | Column: ${col + 1}`);
 
-            zoomedInLaydownGroup.addLayer(binPolygon);
-
-            // Add bin label at center of each bin
-            const centerLat = (northLat + southLat) / 2;
-            const centerLon = (westLon + eastLon) / 2;
-
-            const labelBgColor = specialBins[binLabel] ?
-                'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)';
-            const labelBorderColor = specialBins[binLabel] ?
-                specialBins[binLabel].color : rowColors[rowLabel].color;
-            const labelFontSize = specialBins[binLabel] && labelText.length > 6 ? '9px' : '10px';
-
-            const labelMarker = L.marker([centerLat, centerLon], {
-                icon: L.divIcon({
-                    className: 'bin-label',
-                    html: `<div style="background: ${labelBgColor}; border: 1px solid ${labelBorderColor}; padding: 1px 3px; font-weight: bold; font-size: ${labelFontSize}; border-radius: 2px; white-space: nowrap;">${labelText}</div>`,
-                    iconSize: null,
-                    iconAnchor: [labelText.length * 4, 8]
-                })
+            // Add hover effects - highlight on mouseover
+            const originalStyle = { ...binStyle };
+            binPolygon.on('mouseover', function() {
+                this.setStyle({
+                    weight: 2,
+                    opacity: 0.9,
+                    fillOpacity: isSpecial ? binStyle.fillOpacity : 0.25
+                });
             });
 
-            zoomedInLaydownGroup.addLayer(labelMarker);
+            binPolygon.on('mouseout', function() {
+                this.setStyle(originalStyle);
+            });
+
+            zoomedInLaydownGroup.addLayer(binPolygon);
+
+            // Only add PERMANENT labels for SPECIAL bins
+            if (isSpecial) {
+                const centerLat = (northLat + southLat) / 2;
+                const centerLon = (westLon + eastLon) / 2;
+
+                const labelBgColor = 'rgba(255,255,255,0.95)';
+                const labelBorderColor = specialBins[binLabel].color;
+                const labelFontSize = labelText.length > 6 ? '9px' : '10px';
+
+                const labelMarker = L.marker([centerLat, centerLon], {
+                    icon: L.divIcon({
+                        className: 'bin-label',
+                        html: `<div style="background: ${labelBgColor}; border: 2px solid ${labelBorderColor}; padding: 2px 4px; font-weight: bold; font-size: ${labelFontSize}; border-radius: 3px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.4);">${labelText}</div>`,
+                        iconSize: null,
+                        iconAnchor: [labelText.length * 4, 8]
+                    })
+                });
+
+                zoomedInLaydownGroup.addLayer(labelMarker);
+            }
         }
     }
 
