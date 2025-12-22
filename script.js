@@ -467,21 +467,25 @@ function createDetailedLaydownBins() {
                         const items = await getBinItems(binLabel);
                         console.log('Items fetched:', items);
                         const itemsHtml = typeof renderItemsList === 'function' ? renderItemsList(items) : '<p>renderItemsList not found</p>';
-                        popup.setContent(`
+                        const newContent = `
                             <div class="bin-details">
                                 <h3>${labelText}</h3>
                                 <p>Bin: ${binLabel} | Column: ${colLabel} | Row: ${rowNumber}</p>
                                 <p><strong>Items: ${items.length}</strong></p>
                                 ${itemsHtml}
                             </div>
-                        `);
+                        `;
+                        popup.setContent(newContent);
+                        popup.update(); // Force Leaflet to re-render the popup
                     } else {
                         console.error('getBinItems function not found');
                         popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Database not connected</p></div>`);
+                        popup.update();
                     }
                 } catch (error) {
                     console.error('Error loading bin items:', error);
                     popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Error loading items: ${error.message}</p></div>`);
+                    popup.update();
                 }
             });
 
