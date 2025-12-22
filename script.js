@@ -456,6 +456,11 @@ function createDetailedLaydownBins() {
             // Add popup with bin information - loads items from database
             binPolygon.bindPopup(`<div class="bin-details"><h3>${labelText}</h3><p>Loading items...</p></div>`, { maxWidth: 350 });
 
+            // Debug: log when bin is clicked
+            binPolygon.on('click', function() {
+                console.log('Bin clicked:', binLabel);
+            });
+
             // Load items when popup opens
             binPolygon.on('popupopen', async function(e) {
                 const popup = e.target.getPopup();
@@ -636,11 +641,13 @@ createDetailedLaydownBins();
 function updateLayerVisibility() {
     const currentZoom = map.getZoom();
     const DETAIL_ZOOM_THRESHOLD = 17;
+    console.log('Zoom level:', currentZoom, '| Showing:', currentZoom >= DETAIL_ZOOM_THRESHOLD ? 'DETAILED BINS' : 'SIMPLE VIEW');
 
     if (currentZoom >= DETAIL_ZOOM_THRESHOLD) {
         // Zoomed in - show detailed bins
         if (!map.hasLayer(zoomedInLaydownGroup)) {
             map.addLayer(zoomedInLaydownGroup);
+            console.log('Added detailed bin layer - bins are now clickable');
         }
         if (map.hasLayer(zoomedOutLaydownGroup)) {
             map.removeLayer(zoomedOutLaydownGroup);
