@@ -3,13 +3,15 @@ const SUPABASE_URL = 'https://pnybpcizabzvinnywyaq.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBueWJwY2l6YWJ6dmlubnl3eWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY0MjkyODQsImV4cCI6MjA4MjAwNTI4NH0.Hk0GphVqc5i-J4e0KaBCcx6-XDOXlWUKjm3LRxgLaUs';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// The CDN exposes window.supabase.createClient
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('Supabase client initialized:', db ? 'success' : 'failed');
 
 // ============= BIN ITEMS DATABASE FUNCTIONS =============
 
 // Get all items in a specific bin
 async function getBinItems(binId) {
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .select('*')
         .eq('bin_id', binId)
@@ -24,7 +26,7 @@ async function getBinItems(binId) {
 
 // Get all items across all bins
 async function getAllItems() {
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .select('*')
         .order('bin_id', { ascending: true });
@@ -38,7 +40,7 @@ async function getAllItems() {
 
 // Add a new item to a bin
 async function addBinItem(binId, itemName, quantity = 1, subBin = null, notes = null, lat = null, lon = null) {
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .insert([{
             bin_id: binId,
@@ -62,7 +64,7 @@ async function addBinItem(binId, itemName, quantity = 1, subBin = null, notes = 
 async function updateBinItem(itemId, updates) {
     updates.date_modified = new Date().toISOString();
 
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .update(updates)
         .eq('id', itemId)
@@ -77,7 +79,7 @@ async function updateBinItem(itemId, updates) {
 
 // Delete an item
 async function deleteBinItem(itemId) {
-    const { error } = await supabase
+    const { error } = await db
         .from('bin_items')
         .delete()
         .eq('id', itemId);
@@ -99,7 +101,7 @@ async function moveItem(itemId, newBinId, newSubBin = null) {
 
 // Get item count per bin (for showing on map)
 async function getBinItemCounts() {
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .select('bin_id');
 
@@ -118,7 +120,7 @@ async function getBinItemCounts() {
 
 // Search items by name
 async function searchItems(searchTerm) {
-    const { data, error } = await supabase
+    const { data, error } = await db
         .from('bin_items')
         .select('*')
         .ilike('item_name', `%${searchTerm}%`);
