@@ -48,64 +48,68 @@ const binWidth = 0.000364;
 const topLat = 35.293958;
 const leftLon = -101.603798;
 
-// Define colors for each row
-const rowColors = {
-    'A': { color: '#FF6B6B', fillColor: '#FF6B6B' }, // Red
+// Define colors for each column (A-G, East to West)
+const colColors = {
+    'A': { color: '#FF6B6B', fillColor: '#FF6B6B' }, // Red (Easternmost)
     'B': { color: '#4ECDC4', fillColor: '#4ECDC4' }, // Teal
     'C': { color: '#45B7D1', fillColor: '#45B7D1' }, // Blue
     'D': { color: '#96CEB4', fillColor: '#96CEB4' }, // Green
-    'E': { color: '#FFEAA7', fillColor: '#FFEAA7' }  // Yellow
+    'E': { color: '#FFEAA7', fillColor: '#FFEAA7' }, // Yellow
+    'F': { color: '#DDA0DD', fillColor: '#DDA0DD' }, // Plum
+    'G': { color: '#98D8C8', fillColor: '#98D8C8' }  // Mint (Westernmost)
 };
 
-// Define special bin configurations
+// Define special bin configurations (new coordinates: A-G East to West, 1-5 North to South)
 const specialBins = {
-    'A1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
-    'A2': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
-    'A3': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.4 },
-    'A4': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.4 },
-    'A6': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.4 },
-    'A7': { label: 'A7', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.6 }, // Dark purple
-    'B3': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
-    'B4': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
-    'B7': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.4 },
-    'D7': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.4 },
-    'E7': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.4 }
+    'G1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
+    'F1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.6 },
+    'E1': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.4 },
+    'D1': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.4 },
+    'B1': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.4 },
+    'A1': { label: 'A1', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.6 }, // Dark purple
+    'E2': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
+    'D2': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.4 },
+    'A2': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.4 },
+    'A4': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.4 },
+    'A5': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.4 }
 };
 
-// Bins that are part of Bayonne Laydown
-const bayonneBins = ['D1', 'D2', 'D3', 'E2', 'E3', 'E4'];
+// Bins that are part of Bayonne Laydown (new coordinates)
+const bayonneBins = ['G4', 'F4', 'E4', 'F5', 'E5', 'D5'];
 
 // Store all bins for easier management
 const laydownBins = {};
 const binLabels = {}; // Store label markers for later removal/modification
 
 // Create bins using nested loops
-const rowLabels = ['A', 'B', 'C', 'D', 'E'];
+// New coordinate system: A-G columns (East to West), 1-5 rows (North to South)
+const colLabels = ['G', 'F', 'E', 'D', 'C', 'B', 'A']; // West to East physically (G=West, A=East)
 for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 7; col++) {
-        const rowLabel = rowLabels[row];
-        const binLabel = `${rowLabel}${col + 1}`;
-        
+        const colLabel = colLabels[col];
+        const rowNumber = row + 1;
+        const binLabel = `${colLabel}${rowNumber}`;
+
         // Calculate bin corners
         const northLat = topLat - (row * binHeight);
         const southLat = northLat - binHeight;
         const westLon = leftLon + (col * binWidth);
         const eastLon = westLon + binWidth;
-        
+
         // Skip creating separate bins for Bayonne Laydown area
         if (bayonneBins.includes(binLabel)) {
             continue;
         }
-        
+
         // Determine bin styling
         let binStyle = {
-            color: rowColors[rowLabel].color,
+            color: colColors[colLabel].color,
             weight: 1,
             opacity: 0.8,
-            fillColor: rowColors[rowLabel].fillColor,
+            fillColor: colColors[colLabel].fillColor,
             fillOpacity: 0.2
         };
-        
+
         // Override with special bin styling if applicable
         if (specialBins[binLabel]) {
             binStyle = {
@@ -116,7 +120,7 @@ for (let row = 0; row < 5; row++) {
                 fillOpacity: specialBins[binLabel].fillOpacity
             };
         }
-        
+
         // Create bin polygon
         const binPolygon = L.polygon([
             [northLat, westLon],  // NW corner
@@ -124,27 +128,27 @@ for (let row = 0; row < 5; row++) {
             [southLat, eastLon],  // SE corner
             [southLat, westLon]   // SW corner
         ], binStyle).addTo(map);
-        
+
         // Determine label text
         const labelText = specialBins[binLabel] ? specialBins[binLabel].label : binLabel;
-        
+
         // Add popup with bin information
-        binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Row: ${rowLabel} | Column: ${col + 1}`);
-        
+        binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Column: ${colLabel} | Row: ${rowNumber}`);
+
         // Store reference to bin
         laydownBins[binLabel] = binPolygon;
-        
+
         // Add bin label at center of each bin
         const centerLat = (northLat + southLat) / 2;
         const centerLon = (westLon + eastLon) / 2;
-        
+
         // Determine label styling
-        const labelBgColor = specialBins[binLabel] ? 
+        const labelBgColor = specialBins[binLabel] ?
             'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.8)';
-        const labelBorderColor = specialBins[binLabel] ? 
-            specialBins[binLabel].color : rowColors[rowLabel].color;
+        const labelBorderColor = specialBins[binLabel] ?
+            specialBins[binLabel].color : colColors[colLabel].color;
         const labelFontSize = specialBins[binLabel] && labelText.length > 6 ? '9px' : '10px';
-        
+
         const labelMarker = L.marker([centerLat, centerLon], {
             icon: L.divIcon({
                 className: 'bin-label',
@@ -153,7 +157,7 @@ for (let row = 0; row < 5; row++) {
                 iconAnchor: [labelText.length * 4, 8]
             })
         }).addTo(map);
-        
+
         binLabels[binLabel] = labelMarker;
     }
 }
@@ -300,7 +304,7 @@ const bayonneLaydown = L.polygon(bayonneCoords, {
     fillColor: 'teal',
     fillOpacity: 0.3
 }).addTo(map);
-bayonneLaydown.bindPopup('<b>Bayonne Laydown</b><br>Bins: D1, D2, D3, E2, E3, E4');
+bayonneLaydown.bindPopup('<b>Bayonne Laydown</b><br>Bins: G4, F4, E4, F5, E5, D5');
 
 // Add coordinate markers for crane area corners
 craneCoords.forEach((coord, i) => {
@@ -440,13 +444,13 @@ function highlightBin(binLabel, color = 'red') {
 
 // Function to reset bin style
 function resetBinStyle(binLabel) {
-    const rowLabel = binLabel[0];
-    if (laydownBins[binLabel] && rowColors[rowLabel]) {
+    const colLabel = binLabel[0];
+    if (laydownBins[binLabel] && colColors[colLabel]) {
         laydownBins[binLabel].setStyle({
-            color: rowColors[rowLabel].color,
+            color: colColors[colLabel].color,
             weight: 1,
             opacity: 0.8,
-            fillColor: rowColors[rowLabel].fillColor,
+            fillColor: colColors[colLabel].fillColor,
             fillOpacity: 0.2
         });
     }
@@ -477,22 +481,22 @@ function clearAllHighlights() {
     Object.keys(laydownBins).forEach(binLabel => resetBinStyle(binLabel));
 }
 
-// Function to get bins in a row
-function getBinsInRow(rowLabel) {
+// Function to get bins in a row (rows are numbered 1-5, North to South)
+function getBinsInRow(rowNumber) {
     const bins = [];
-    for (let col = 1; col <= 7; col++) {
-        bins.push(`${rowLabel}${col}`);
-    }
+    const cols = ['G', 'F', 'E', 'D', 'C', 'B', 'A'];
+    cols.forEach(col => {
+        bins.push(`${col}${rowNumber}`);
+    });
     return bins;
 }
 
-// Function to get bins in a column
-function getBinsInColumn(colNumber) {
+// Function to get bins in a column (columns are lettered A-G, East to West)
+function getBinsInColumn(colLabel) {
     const bins = [];
-    const rows = ['A', 'B', 'C', 'D', 'E'];
-    rows.forEach(row => {
-        bins.push(`${row}${colNumber}`);
-    });
+    for (let row = 1; row <= 5; row++) {
+        bins.push(`${colLabel}${row}`);
+    }
     return bins;
 }
 
@@ -509,9 +513,9 @@ function setBinOccupancy(binLabel, isOccupied, occupancyInfo = '') {
 }
 
 // Example usage (uncomment to test):
-// highlightBin('A1', 'purple');
-// highlightBins(['B3', 'B4', 'B5'], 'green');
-// addMaterialToBin('C2', 'Steel Pipes', '50 units');
+// highlightBin('G1', 'purple');
+// highlightBins(['E2', 'D2', 'C2'], 'green');
+// addMaterialToBin('E3', 'Steel Pipes', '50 units');
 // setBinOccupancy('D4', true, 'Construction Equipment');
 
 // Export functions for use in other scripts if needed
