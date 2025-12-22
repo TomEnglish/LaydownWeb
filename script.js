@@ -179,25 +179,25 @@ const officeTrailers = L.polygon(officeCoords, {
 }).addTo(map);
 officeTrailers.bindPopup('<b>Office Trailers</b>');
 
-// Crane area
+// Crane area - non-interactive to allow bin clicks
 const craneArea = L.polygon(craneCoords, {
     color: 'brown',
     weight: 2,
     opacity: 0.8,
     fillColor: 'brown',
-    fillOpacity: 0.3
+    fillOpacity: 0.3,
+    interactive: false
 }).addTo(map);
-craneArea.bindPopup('<b>Crane Area</b>');
 
-// Bayonne Laydown
+// Bayonne Laydown - non-interactive to allow bin clicks
 const bayonneLaydown = L.polygon(bayonneCoords, {
     color: 'teal',
     weight: 2,
     opacity: 0.8,
     fillColor: 'teal',
-    fillOpacity: 0.3
+    fillOpacity: 0.3,
+    interactive: false
 }).addTo(map);
-bayonneLaydown.bindPopup('<b>Bayonne Laydown</b><br>Bins: A4, B4, C4, B5, C5, D5');
 
 // Work Site
 const workSite = L.polygon(workSiteCoords, {
@@ -503,17 +503,16 @@ function createDetailedLaydownBins() {
         }
     }
 
-    // Add coordinate markers for laydown area corners
+    // Add coordinate markers for laydown area corners - non-interactive
     laydownCoords.forEach((coord, i) => {
         const marker = L.circleMarker(coord, {
             radius: 3,
             fillColor: 'red',
             color: 'white',
             weight: 1,
-            fillOpacity: 0.9
+            fillOpacity: 0.9,
+            interactive: false
         });
-        marker.bindTooltip(`Laydown C${i+1}<br>${coord[0].toFixed(6)}, ${coord[1].toFixed(6)}`,
-            {permanent: false, direction: 'top'});
         zoomedInLaydownGroup.addLayer(marker);
     });
 
@@ -529,13 +528,14 @@ function createDetailedLaydownBins() {
     });
     zoomedInLaydownGroup.addLayer(detailedLabel);
 
-    // Add white outline for laydown area
+    // Add white outline for laydown area - non-interactive to allow bin clicks
     const laydownOutline = L.polygon(laydownCoords, {
         color: 'white',
         weight: 2,
         opacity: 0.8,
         fillColor: 'transparent',
-        fillOpacity: 0
+        fillOpacity: 0,
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(laydownOutline);
 
@@ -560,17 +560,19 @@ function createDetailedLaydownBins() {
         weight: 3,
         opacity: 1,
         fillColor: 'yellow',
-        fillOpacity: 0.7
+        fillOpacity: 0.7,
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(gate);
 
     const gateLabel = L.marker([gateCenterLat, gateWestLon - 0.00005], {
         icon: L.divIcon({
             className: 'gate-label',
-            html: '<div style="background: yellow; border: 2px solid black; padding: 2px; font-weight: bold; font-size: 12px;">GATE</div>',
+            html: '<div style="background: yellow; border: 2px solid black; padding: 2px; font-weight: bold; font-size: 12px; pointer-events: none;">GATE</div>',
             iconSize: null,
             iconAnchor: [20, 10]
-        })
+        }),
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(gateLabel);
 
@@ -590,17 +592,19 @@ function createDetailedLaydownBins() {
         weight: 3,
         opacity: 1,
         fillColor: 'pink',
-        fillOpacity: 0.7
+        fillOpacity: 0.7,
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(egate);
 
     const egateLabel = L.marker([egateCenterLat, egateWestLon - 0.00005], {
         icon: L.divIcon({
             className: 'gate-label',
-            html: '<div style="background: pink; border: 2px solid black; padding: 2px; font-weight: bold; font-size: 12px;">GATE</div>',
+            html: '<div style="background: pink; border: 2px solid black; padding: 2px; font-weight: bold; font-size: 12px; pointer-events: none;">GATE</div>',
             iconSize: null,
             iconAnchor: [20, 10]
-        })
+        }),
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(egateLabel);
 }
@@ -637,87 +641,96 @@ function updateLayerVisibility() {
 // Add zoom event listener
 map.on('zoomend', updateLayerVisibility);
 
-// ============= AREA LABELS (Always Visible) =============
+// ============= AREA LABELS (Always Visible, Non-interactive) =============
 
 L.marker([35.2937, -101.60425], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">LUNCH TENT</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">LUNCH TENT</div>`,
         iconSize: null,
         iconAnchor: [40, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29436, -101.6027], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">EQUIPMENT LOT</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">EQUIPMENT LOT</div>`,
         iconSize: null,
         iconAnchor: [50, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29438, -101.60413], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">PARKING</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">PARKING</div>`,
         iconSize: null,
         iconAnchor: [35, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29326, -101.60429], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">OFFICE TRAILERS</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">OFFICE TRAILERS</div>`,
         iconSize: null,
         iconAnchor: [55, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29338, -101.60326], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">CRANE</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">CRANE</div>`,
         iconSize: null,
         iconAnchor: [25, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29285, -101.60288], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(0,128,128,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; color: white; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">BAYONNE LAYDOWN</div>`,
+        html: `<div style="background: rgba(0,128,128,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; color: white; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">BAYONNE LAYDOWN</div>`,
         iconSize: null,
         iconAnchor: [65, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29372, -101.6059], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">F6B WORK SITE</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">F6B WORK SITE</div>`,
         iconSize: null,
         iconAnchor: [50, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.29455, -101.6074], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">DRAINAGE</div>`,
+        html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">DRAINAGE</div>`,
         iconSize: null,
         iconAnchor: [40, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 L.marker([35.293885, -101.601937], {
     icon: L.divIcon({
         className: 'area-label',
-        html: `<div style="background: rgba(255,140,0,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; color: white;">CONEXES</div>`,
+        html: `<div style="background: rgba(255,140,0,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 11px; color: white; pointer-events: none;">CONEXES</div>`,
         iconSize: null,
         iconAnchor: [30, 12]
-    })
+    }),
+    interactive: false
 }).addTo(map);
 
 // Add a scale control
