@@ -455,45 +455,12 @@ function createDetailedLaydownBins() {
                 direction: 'top'
             });
 
-            // Add popup with bin information - loads items from database
-            binPolygon.bindPopup(`<div class="bin-details"><h3>${labelText}</h3><p>Loading items...</p></div>`, { maxWidth: 350 });
-
-            // Debug: log when bin is clicked
+            // Click to open bin details page
             binPolygon.on('click', function() {
                 console.log('Bin clicked:', binLabel);
-            });
-
-            // Load items when popup opens
-            binPolygon.on('popupopen', async function(e) {
-                const popup = e.target.getPopup();
-                console.log('Popup opened for bin:', binLabel);
-
-                try {
-                    if (typeof getBinItems === 'function') {
-                        console.log('Fetching items for bin:', binLabel);
-                        const items = await getBinItems(binLabel);
-                        console.log('Items fetched:', items);
-                        const itemsHtml = typeof renderItemsList === 'function' ? renderItemsList(items) : '<p>renderItemsList not found</p>';
-                        const newContent = `
-                            <div class="bin-details">
-                                <h3>${labelText}</h3>
-                                <p>Bin: ${binLabel} | Column: ${colLabel} | Row: ${rowNumber}</p>
-                                <p><strong>Items: ${items.length}</strong></p>
-                                ${itemsHtml}
-                            </div>
-                        `;
-                        popup.setContent(newContent);
-                        popup.update(); // Force Leaflet to re-render the popup
-                    } else {
-                        console.error('getBinItems function not found');
-                        popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Database not connected</p></div>`);
-                        popup.update();
-                    }
-                } catch (error) {
-                    console.error('Error loading bin items:', error);
-                    popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Error loading items: ${error.message}</p></div>`);
-                    popup.update();
-                }
+                // Open bin details page with bin info
+                const url = `bin-details.html?bin=${encodeURIComponent(binLabel)}&label=${encodeURIComponent(labelText)}`;
+                window.open(url, '_blank');
             });
 
             // Add hover effects - highlight on mouseover
