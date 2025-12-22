@@ -197,7 +197,7 @@ const bayonneLaydown = L.polygon(bayonneCoords, {
     fillColor: 'teal',
     fillOpacity: 0.3
 }).addTo(map);
-bayonneLaydown.bindPopup('<b>Bayonne Laydown</b><br>Bins: D1, D2, D3, E2, E3, E4');
+bayonneLaydown.bindPopup('<b>Bayonne Laydown</b><br>Bins: G4, F4, E4, F5, E5, D5');
 
 // Work Site
 const workSite = L.polygon(workSiteCoords, {
@@ -337,37 +337,40 @@ const simpleLaydownLabel = L.marker([35.29325, -101.6025], {
 zoomedOutLaydownGroup.addLayer(simpleLaydownLabel);
 
 // ZOOMED IN: Detailed bin grid (visible when zoom >= 17)
+// New coordinate system: A-G columns (East to West), 1-5 rows (North to South)
 function createDetailedLaydownBins() {
     // Define special bin configurations with BOLD styling
+    // Format: ColumnLetter + RowNumber (e.g., G1 = westernmost column, northernmost row)
     const specialBins = {
-        'A1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
-        'A2': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
-        'A3': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.6 },
-        'A4': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.6 },
-        'A6': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.6 },
-        'A7': { label: 'A7', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.65 },
-        'B3': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
-        'B4': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
-        'B7': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.6 },
-        'D7': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.6 },
-        'E7': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.6 }
+        'G1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
+        'F1': { label: 'Tool Conex', color: '#808080', fillColor: '#808080', fillOpacity: 0.65 },
+        'E1': { label: 'Receiving', color: '#00BCD4', fillColor: '#00BCD4', fillOpacity: 0.6 },
+        'D1': { label: 'Shipping', color: '#2196F3', fillColor: '#2196F3', fillOpacity: 0.6 },
+        'B1': { label: 'Surplus', color: '#FFC107', fillColor: '#FFC107', fillOpacity: 0.6 },
+        'A1': { label: 'A1', color: '#4A148C', fillColor: '#4A148C', fillOpacity: 0.65 },
+        'E2': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
+        'D2': { label: 'Holding', color: '#FF9800', fillColor: '#FF9800', fillOpacity: 0.6 },
+        'A2': { label: 'TM', color: '#009688', fillColor: '#009688', fillOpacity: 0.6 },
+        'A4': { label: 'Combined Cycle', color: '#3F51B5', fillColor: '#3F51B5', fillOpacity: 0.6 },
+        'A5': { label: 'Blast Yard', color: '#F44336', fillColor: '#F44336', fillOpacity: 0.6 }
     };
 
-    // Bins that are part of Bayonne Laydown
-    const bayonneBins = ['D1', 'D2', 'D3', 'E2', 'E3', 'E4'];
+    // Bins that are part of Bayonne Laydown (new coordinates)
+    const bayonneBins = ['G4', 'F4', 'E4', 'F5', 'E5', 'D5'];
 
-    const rowLabels = ['A', 'B', 'C', 'D', 'E'];
+    // Column labels: G=westernmost (index 0), A=easternmost (index 6)
+    const colLabels = ['G', 'F', 'E', 'D', 'C', 'B', 'A'];
 
-    // Add row headers on the left side
+    // Add row headers on the left side (rows 1-5, North to South)
     for (let row = 0; row < 5; row++) {
-        const rowLabel = rowLabels[row];
+        const rowNumber = row + 1;
         const headerLat = topLat - (row * binHeight) - (binHeight / 2);
         const headerLon = leftLon - 0.00015;
 
         const rowHeader = L.marker([headerLat, headerLon], {
             icon: L.divIcon({
                 className: 'row-header',
-                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 7px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${rowLabel}</div>`,
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 7px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${rowNumber}</div>`,
                 iconSize: null,
                 iconAnchor: [0, 8]
             })
@@ -375,15 +378,16 @@ function createDetailedLaydownBins() {
         zoomedInLaydownGroup.addLayer(rowHeader);
     }
 
-    // Add column headers at the top
+    // Add column headers at the top (columns G-A, West to East physically)
     for (let col = 0; col < 7; col++) {
+        const colLabel = colLabels[col];
         const headerLat = topLat + 0.00008;
         const headerLon = leftLon + (col * binWidth) + (binWidth / 2);
 
         const colHeader = L.marker([headerLat, headerLon], {
             icon: L.divIcon({
                 className: 'col-header',
-                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 6px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${col + 1}</div>`,
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 6px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${colLabel}</div>`,
                 iconSize: null,
                 iconAnchor: [8, 0]
             })
@@ -393,8 +397,9 @@ function createDetailedLaydownBins() {
 
     for (let row = 0; row < 5; row++) {
         for (let col = 0; col < 7; col++) {
-            const rowLabel = rowLabels[row];
-            const binLabel = `${rowLabel}${col + 1}`;
+            const colLabel = colLabels[col];
+            const rowNumber = row + 1;
+            const binLabel = `${colLabel}${rowNumber}`;
 
             // Skip creating separate bins for Bayonne Laydown area
             if (bayonneBins.includes(binLabel)) {
@@ -443,13 +448,13 @@ function createDetailedLaydownBins() {
             const labelText = isSpecial ? specialBins[binLabel].label : binLabel;
 
             // Add hover tooltip for ALL bins
-            binPolygon.bindTooltip(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Row: ${rowLabel} | Column: ${col + 1}`, {
+            binPolygon.bindTooltip(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Column: ${colLabel} | Row: ${rowNumber}`, {
                 sticky: true,
                 direction: 'top'
             });
 
             // Add popup with bin information
-            binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Row: ${rowLabel} | Column: ${col + 1}`);
+            binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Column: ${colLabel} | Row: ${rowNumber}`);
 
             // Add hover effects - highlight on mouseover
             const originalStyle = { ...binStyle };
