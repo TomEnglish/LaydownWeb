@@ -454,15 +454,19 @@ function createDetailedLaydownBins() {
             });
 
             // Add popup with bin information - loads items from database
-            binPolygon.bindPopup(() => {
-                const popup = L.popup();
-                // Show loading state
-                popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Loading items...</p></div>`);
+            binPolygon.bindPopup(`<div class="bin-details"><h3>${labelText}</h3><p>Loading items...</p></div>`, { maxWidth: 350 });
 
-                // Fetch items from Supabase
-                if (typeof getBinItems === 'function') {
-                    getBinItems(binLabel).then(items => {
-                        const itemsHtml = typeof renderItemsList === 'function' ? renderItemsList(items) : '';
+            // Load items when popup opens
+            binPolygon.on('popupopen', async function(e) {
+                const popup = e.target.getPopup();
+                console.log('Popup opened for bin:', binLabel);
+
+                try {
+                    if (typeof getBinItems === 'function') {
+                        console.log('Fetching items for bin:', binLabel);
+                        const items = await getBinItems(binLabel);
+                        console.log('Items fetched:', items);
+                        const itemsHtml = typeof renderItemsList === 'function' ? renderItemsList(items) : '<p>renderItemsList not found</p>';
                         popup.setContent(`
                             <div class="bin-details">
                                 <h3>${labelText}</h3>
@@ -471,10 +475,15 @@ function createDetailedLaydownBins() {
                                 ${itemsHtml}
                             </div>
                         `);
-                    });
+                    } else {
+                        console.error('getBinItems function not found');
+                        popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Database not connected</p></div>`);
+                    }
+                } catch (error) {
+                    console.error('Error loading bin items:', error);
+                    popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Error loading items: ${error.message}</p></div>`);
                 }
-                return popup;
-            }, { maxWidth: 350 });
+            });
 
             // Add hover effects - highlight on mouseover
             const originalStyle = { ...binStyle };
