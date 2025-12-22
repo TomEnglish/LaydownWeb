@@ -453,8 +453,28 @@ function createDetailedLaydownBins() {
                 direction: 'top'
             });
 
-            // Add popup with bin information
-            binPolygon.bindPopup(`<b>${labelText}</b><br>Bin: ${binLabel}<br>Column: ${colLabel} | Row: ${rowNumber}`);
+            // Add popup with bin information - loads items from database
+            binPolygon.bindPopup(() => {
+                const popup = L.popup();
+                // Show loading state
+                popup.setContent(`<div class="bin-details"><h3>${labelText}</h3><p>Loading items...</p></div>`);
+
+                // Fetch items from Supabase
+                if (typeof getBinItems === 'function') {
+                    getBinItems(binLabel).then(items => {
+                        const itemsHtml = typeof renderItemsList === 'function' ? renderItemsList(items) : '';
+                        popup.setContent(`
+                            <div class="bin-details">
+                                <h3>${labelText}</h3>
+                                <p>Bin: ${binLabel} | Column: ${colLabel} | Row: ${rowNumber}</p>
+                                <p><strong>Items: ${items.length}</strong></p>
+                                ${itemsHtml}
+                            </div>
+                        `);
+                    });
+                }
+                return popup;
+            }, { maxWidth: 350 });
 
             // Add hover effects - highlight on mouseover
             const originalStyle = { ...binStyle };
