@@ -286,6 +286,10 @@
         const binId = urlParams.get('bin');
         const binLabel = urlParams.get('label') || binId;
 
+        console.log('Bin Details Page Loaded');
+        console.log('Bin ID from URL:', binId);
+        console.log('Bin Label:', binLabel);
+
         // Update page title
         document.getElementById('page-title').textContent = `PM Bin ${binId}`;
         document.title = `PM Bin ${binId} - Details`;
@@ -298,17 +302,23 @@
             const container = document.getElementById('items-container');
             const countEl = document.getElementById('items-count');
 
+            console.log('loadBinItems called for bin:', binId);
+
             if (!binId) {
                 container.innerHTML = '<div class="error-state"><h3>No bin specified</h3><p>Please select a bin from the map.</p></div>';
                 return;
             }
 
             try {
+                console.log('Querying Supabase for bin_id:', binId);
                 const { data: items, error } = await db
                     .from('bin_items')
                     .select('*')
                     .eq('bin_id', binId)
                     .order('item_name');
+
+                console.log('Supabase response - items:', items);
+                console.log('Supabase response - error:', error);
 
                 if (error) throw error;
 
