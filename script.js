@@ -370,10 +370,11 @@ function createDetailedLaydownBins() {
         const rowHeader = L.marker([headerLat, headerLon], {
             icon: L.divIcon({
                 className: 'row-header',
-                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 7px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${rowNumber}</div>`,
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 7px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">${rowNumber}</div>`,
                 iconSize: null,
                 iconAnchor: [0, 8]
-            })
+            }),
+            interactive: false
         });
         zoomedInLaydownGroup.addLayer(rowHeader);
     }
@@ -387,10 +388,11 @@ function createDetailedLaydownBins() {
         const colHeader = L.marker([headerLat, headerLon], {
             icon: L.divIcon({
                 className: 'col-header',
-                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 6px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">${colLabel}</div>`,
+                html: `<div style="background: rgba(255,255,255,0.95); padding: 4px 6px; font-weight: bold; font-size: 13px; border-radius: 3px; border: 2px solid #333; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">${colLabel}</div>`,
                 iconSize: null,
                 iconAnchor: [8, 0]
-            })
+            }),
+            interactive: false
         });
         zoomedInLaydownGroup.addLayer(colHeader);
     }
@@ -522,10 +524,11 @@ function createDetailedLaydownBins() {
                 const labelMarker = L.marker([centerLat, centerLon], {
                     icon: L.divIcon({
                         className: 'bin-label',
-                        html: `<div style="background: ${labelBgColor}; border: 2px solid ${labelBorderColor}; padding: 2px 4px; font-weight: bold; font-size: ${labelFontSize}; border-radius: 3px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.4);">${labelText}</div>`,
+                        html: `<div style="background: ${labelBgColor}; border: 2px solid ${labelBorderColor}; padding: 2px 4px; font-weight: bold; font-size: ${labelFontSize}; border-radius: 3px; white-space: nowrap; box-shadow: 1px 1px 3px rgba(0,0,0,0.4); pointer-events: none;">${labelText}</div>`,
                         iconSize: null,
                         iconAnchor: [labelText.length * 4, 8]
-                    })
+                    }),
+                    interactive: false  // Don't intercept clicks - let them pass through to bins
                 });
 
                 zoomedInLaydownGroup.addLayer(labelMarker);
@@ -551,10 +554,11 @@ function createDetailedLaydownBins() {
     const detailedLabel = L.marker([35.29325, -101.6025], {
         icon: L.divIcon({
             className: 'area-label',
-            html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 12px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3);">LAYDOWN AREA</div>`,
+            html: `<div style="background: rgba(255,255,255,0.9); padding: 2px 5px; border: 1px solid #333; border-radius: 3px; font-weight: bold; font-size: 12px; white-space: nowrap; box-shadow: 2px 2px 4px rgba(0,0,0,0.3); pointer-events: none;">LAYDOWN AREA</div>`,
             iconSize: null,
             iconAnchor: [60, 12]
-        })
+        }),
+        interactive: false
     });
     zoomedInLaydownGroup.addLayer(detailedLabel);
 
