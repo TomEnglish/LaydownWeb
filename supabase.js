@@ -7,6 +7,33 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 console.log('Supabase client initialized:', db ? 'success' : 'failed');
 
+// Test database connection on load
+(async function testConnection() {
+    try {
+        const { data, error, count } = await db
+            .from('bin_items')
+            .select('*', { count: 'exact', head: true });
+
+        if (error) {
+            console.error('Database connection test FAILED:', error.message);
+            console.error('Full error:', error);
+        } else {
+            console.log('Database connection test PASSED');
+            // Now fetch actual data to see what's there
+            const { data: items } = await db.from('bin_items').select('*');
+            console.log('Total items in database:', items ? items.length : 0);
+            if (items && items.length > 0) {
+                console.log('Sample item:', items[0]);
+                console.log('All bin_ids with items:', [...new Set(items.map(i => i.bin_id))]);
+            } else {
+                console.warn('No items found in bin_items table - run INSERT statements from supabase-schema.sql');
+            }
+        }
+    } catch (e) {
+        console.error('Database test exception:', e);
+    }
+})();
+
 // ============= BIN ITEMS DATABASE FUNCTIONS =============
 
 // Get all items in a specific bin
