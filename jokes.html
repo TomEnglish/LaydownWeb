@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joke Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .emoji {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .joke-box {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .setup {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .punchline {
+            font-size: 1.3rem;
+            color: #764ba2;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .punchline.show {
+            opacity: 1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.4);
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .category-select {
+            margin: 20px 0;
+        }
+
+        .category-select label {
+            color: #666;
+            margin-right: 10px;
+        }
+
+        .category-select select {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+
+        footer {
+            margin-top: 30px;
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="emoji">😂</div>
+        <h1>Joke Generator</h1>
+
+        <div class="category-select">
+            <label for="category">Category:</label>
+            <select id="category">
+                <option value="all">All Jokes</option>
+                <option value="programming">Programming</option>
+                <option value="dad">Dad Jokes</option>
+                <option value="puns">Puns</option>
+            </select>
+        </div>
+
+        <div class="joke-box">
+            <p class="setup" id="setup">Click the button to get a joke!</p>
+            <p class="punchline" id="punchline"></p>
+        </div>
+
+        <div class="buttons">
+            <button class="btn" id="newJokeBtn">Tell Me a Joke! 🎭</button>
+            <button class="btn btn-secondary" id="revealBtn" style="display: none;">Reveal Punchline 👀</button>
+        </div>
+
+        <footer>
+            <p>Made with ❤️ and bad humor</p>
+        </footer>
+    </div>
+
+    <script>
+        const jokes = {
+            programming: [
+                { setup: "Why do programmers prefer dark mode?", punchline: "Because light attracts bugs!" },
+                { setup: "Why do Java developers wear glasses?", punchline: "Because they can't C#!" },
+                { setup: "A SQL query walks into a bar, walks up to two tables and asks...", punchline: "Can I join you?" },
+                { setup: "Why did the developer go broke?", punchline: "Because he used up all his cache!" },
+                { setup: "What's a programmer's favorite hangout place?", punchline: "Foo Bar!" },
+                { setup: "Why do programmers hate nature?", punchline: "It has too many bugs!" },
+                { setup: "What do you call 8 hobbits?", punchline: "A hobbyte!" }
+            ],
+            dad: [
+                { setup: "I'm reading a book about anti-gravity.", punchline: "It's impossible to put down!" },
+                { setup: "Why don't eggs tell jokes?", punchline: "They'd crack each other up!" },
+                { setup: "I used to hate facial hair...", punchline: "But then it grew on me." },
+                { setup: "Why don't scientists trust atoms?", punchline: "Because they make up everything!" },
+                { setup: "What do you call a fake noodle?", punchline: "An impasta!" },
+                { setup: "Why did the scarecrow win an award?", punchline: "He was outstanding in his field!" },
+                { setup: "I only know 25 letters of the alphabet.", punchline: "I don't know Y." }
+            ],
+            puns: [
+                { setup: "I used to be a banker...", punchline: "But I lost interest." },
+                { setup: "Did you hear about the claustrophobic astronaut?", punchline: "He just needed a little space." },
+                { setup: "I'm on a seafood diet.", punchline: "I see food and I eat it!" },
+                { setup: "What do you call a bear with no teeth?", punchline: "A gummy bear!" },
+                { setup: "Why can't a bicycle stand on its own?", punchline: "Because it's two-tired!" },
+                { setup: "What do you call a dinosaur that crashes their car?", punchline: "Tyrannosaurus Wrecks!" },
+                { setup: "Why don't skeletons fight each other?", punchline: "They don't have the guts!" }
+            ]
+        };
+
+        const setupEl = document.getElementById('setup');
+        const punchlineEl = document.getElementById('punchline');
+        const newJokeBtn = document.getElementById('newJokeBtn');
+        const revealBtn = document.getElementById('revealBtn');
+        const categorySelect = document.getElementById('category');
+
+        let currentJoke = null;
+
+        function getAllJokes() {
+            return [...jokes.programming, ...jokes.dad, ...jokes.puns];
+        }
+
+        function getRandomJoke(category) {
+            let jokeList;
+            if (category === 'all') {
+                jokeList = getAllJokes();
+            } else {
+                jokeList = jokes[category];
+            }
+            return jokeList[Math.floor(Math.random() * jokeList.length)];
+        }
+
+        function showNewJoke() {
+            const category = categorySelect.value;
+            currentJoke = getRandomJoke(category);
+
+            setupEl.textContent = currentJoke.setup;
+            punchlineEl.textContent = currentJoke.punchline;
+            punchlineEl.classList.remove('show');
+            revealBtn.style.display = 'inline-block';
+            newJokeBtn.textContent = 'Another One! 🎭';
+        }
+
+        function revealPunchline() {
+            punchlineEl.classList.add('show');
+            revealBtn.style.display = 'none';
+        }
+
+        newJokeBtn.addEventListener('click', showNewJoke);
+        revealBtn.addEventListener('click', revealPunchline);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                if (revealBtn.style.display !== 'none') {
+                    revealPunchline();
+                } else {
+                    showNewJoke();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
