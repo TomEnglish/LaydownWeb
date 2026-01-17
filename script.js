@@ -36,6 +36,21 @@ const baseMaps = {
     "Street Map": osmLayer
 };
 
+// ============= PLOT PLAN OVERLAY =============
+
+// Bounds for the laydown area (where the plot plan will be positioned)
+const plotPlanBounds = [
+    [35.292548, -101.603798],  // Southwest corner
+    [35.293958, -101.601252]   // Northeast corner
+];
+
+// Create the image overlay
+const plotPlanOverlay = L.imageOverlay('laydown-overlay.png', plotPlanBounds, {
+    opacity: 0.7,
+    interactive: false
+});
+
+// Layer control for base maps only (overlay controlled by navbar)
 L.control.layers(baseMaps).addTo(map);
 
 // ============= DEFINE COORDINATES FOR ALL AREAS =============
@@ -765,3 +780,41 @@ map.fitBounds(bounds, { padding: [50, 50] });
 setTimeout(() => {
     updateLayerVisibility();
 }, 100);
+
+// ============= PLOT PLAN OVERLAY CONTROLS =============
+
+const plotPlanToggle = document.getElementById('plot-plan-toggle');
+const opacitySlider = document.getElementById('opacity-slider');
+const opacityValue = document.getElementById('opacity-value');
+
+// Toggle plot plan overlay on/off
+plotPlanToggle.addEventListener('change', function() {
+    if (this.checked) {
+        plotPlanOverlay.addTo(map);
+    } else {
+        map.removeLayer(plotPlanOverlay);
+    }
+});
+
+// Update opacity when slider changes
+opacitySlider.addEventListener('input', function() {
+    const opacity = this.value / 100;
+    plotPlanOverlay.setOpacity(opacity);
+    opacityValue.textContent = this.value + '%';
+});
+
+// ============= LEGEND AUTO-HIDE =============
+
+const infoPanel = document.querySelector('.info-panel');
+
+document.addEventListener('mousemove', function(e) {
+    const threshold = 300; // pixels from edge
+    const nearRight = window.innerWidth - e.clientX < threshold;
+    const nearTop = e.clientY < 400;
+
+    if (nearRight && nearTop) {
+        infoPanel.classList.add('visible');
+    } else {
+        infoPanel.classList.remove('visible');
+    }
+});

@@ -7,9 +7,55 @@ body {
     height: 100vh;
     width: 100%;
 }
-.info-panel {
+/* Navbar for overlay controls */
+.navbar {
     position: absolute;
     top: 10px;
+    right: 10px;
+    background: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.overlay-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+}
+.overlay-toggle input {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+.opacity-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+}
+.opacity-control label {
+    color: #666;
+}
+.opacity-control input[type="range"] {
+    width: 100px;
+    cursor: pointer;
+}
+.opacity-control span {
+    min-width: 35px;
+    color: #666;
+    font-size: 12px;
+}
+
+.info-panel {
+    position: absolute;
+    top: 60px;
     right: 10px;
     background: white;
     padding: 15px;
@@ -17,6 +63,16 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     z-index: 1000;
     max-width: 250px;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+.info-panel:hover,
+.info-panel.visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 .info-panel h3 {
     margin-top: 0;
@@ -159,4 +215,30 @@ nav button:hover {
 }
 .bin-details button:hover {
     background: #218838;
+}
+
+/* Plot Plan Overlay Controls */
+.overlay-controls {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+.overlay-controls label {
+    display: block;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+.slider-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+#opacity-slider {
+    flex: 1;
+    cursor: pointer;
+}
+#opacity-value {
+    font-size: 11px;
+    color: #666;
+    min-width: 32px;
 }

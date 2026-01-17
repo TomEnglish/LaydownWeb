@@ -9,6 +9,17 @@
 </head>
 <body>
     <div id="map"></div>
+    <div class="navbar">
+        <label class="overlay-toggle">
+            <input type="checkbox" id="plot-plan-toggle">
+            <span>Plot Plan Overlay</span>
+        </label>
+        <div class="opacity-control">
+            <label for="opacity-slider">Opacity:</label>
+            <input type="range" id="opacity-slider" min="0" max="100" value="70">
+            <span id="opacity-value">70%</span>
+        </div>
+    </div>
     <div class="info-panel">
         <h4>Site Layout Legend</h4>
         <div class="legend-item">
